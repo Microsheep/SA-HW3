@@ -1,0 +1,1 @@
+ps aux|sed '1d'|awk '{print$1,$8,$2}'|sort -k1,1 -k2,2 -k3,3n|awk '{b++;if(x!=$1){if(b!=1)print")";print x=$1;printf"\t"$2"( "$3" ";y=$2}else{if(y!=$2){printf")\n\t"$2"( "$3" ";y=$2}else{printf$3" "}}}END{print")"}'
