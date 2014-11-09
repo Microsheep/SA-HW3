@@ -147,7 +147,10 @@ update(){
 	return
     else
 	percent=0
-	totalup=$(($((${#update}+1))/2))
+	totalup=0
+	for i in $update ; do
+	    totalup=$((totalup+1))
+	done
 	for nowupno in $update ; do
 	    cat $sublist_name|eval sed -n \'$nowupno p\'>$tmp
 	    nowup=$(cat $tmp)
