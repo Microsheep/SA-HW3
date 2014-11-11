@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 now='Welcome'
 feedpy='./feed.py'
 mainsite='./.feed'
@@ -63,7 +63,7 @@ subscribe(){
     else
 	dialog --ascii-lines --title 'Subscribe' \
 	    --msgbox "URL GET!\n$sub" 6 70
-	eval python3 $feedpy -u $sub -t>>$tmp
+	eval python3 $feedpy -u $sub -t>$tmp
 	if [ $? -ne 0 ] ; then
 	    dialog --ascii-lines --title 'Subscribe' \
 		--msgbox "Something wrong!\nIs the URL correct?\n(Otherwise check your internet connection!)" 0 0
@@ -97,7 +97,7 @@ delete(){
     listofdelete=''
     x=0
     while read line ; do
-	x=$((x+1))
+	x=$(($x+1))
 	listofdelete=$listofdelete' '$x' '\""$line"\"' '
     done < $sublist_name
     del=$(eval dialog --output-fd 1 --ascii-lines --title \'Delete\' \
@@ -130,7 +130,7 @@ update(){
     listofupdate=''
     z=0
     while read line ; do
-	z=$((z+1))
+	z=$(($z+1))
 	listofupdate=$listofupdate' '$z' '\""$line"\"' off '
     done < $sublist_name
     update=$(eval dialog --output-fd 1 --ascii-lines --title \'Update\' \
@@ -149,7 +149,7 @@ update(){
 	percent=0
 	totalup=0
 	for i in $update ; do
-	    totalup=$((totalup+1))
+	    totalup=$(($totalup+1))
 	done
 	for nowupno in $update ; do
 	    cat $sublist_name|eval sed -n \'$nowupno p\'>$tmp
@@ -169,7 +169,7 @@ update(){
 	    echo "XXX"
 	    echo "Updating $nowup ..."
 	    echo "XXX"
-	    percent=$((percent+1))
+	    percent=$(($percent+1))
 	    rm $tmp
 	done | dialog --sleep 3 --ascii-lines --title 'Update'  --gauge 'Updating!' 6 70 
 	now='Main_menu'
@@ -186,7 +186,7 @@ read_main(){
     listofread=''
     y=0
     while read line ; do
-	y=$((y+1))
+	y=$(($y+1))
 	listofread=$listofread' '$y' '\""$line"\"' '
     done < $sublist_name
     red=$(eval dialog --output-fd 1 --ascii-lines --title \'Read\' \
@@ -215,7 +215,7 @@ readlist(){
     check=0
     while read line ; do
 	if [ $check -eq 0 ] ; then
-	    q=$((q+1))
+	    q=$(($q+1))
 	    listofreadin=$listofreadin' '$q' '\""$line"\"' '
 	    check=1
 	elif [ $check -eq 1 ] ; then
@@ -234,21 +234,24 @@ readlist(){
     now='Readin'
 }
 readin(){
-    cat "$redplace"|eval sed -n \'$((3*redin)) p\'>$tmp
-    textlength=$(wc -m $tmp|awk '{print $1}')
-    rm $tmp
-    cat "$redplace"|eval sed -n \'$((3*redin-2)) p\'>$tmp
+    cat "$redplace"|eval sed -n \'$((3*$redin-2)) p\'>$tmp
     echo =============================================>>$tmp
-    cat "$redplace"|eval sed -n \'$((3*redin-1)) p\'>>$tmp
+    cat "$redplace"|eval sed -n \'$((3*$redin-1)) p\'>>$tmp
     echo =============================================>>$tmp
-    text=1
-    while [ true ] ; do
-	cat "$redplace"|eval sed -n \'$((3*redin)) p\'|cut -c $text-$((text+65))>>$tmp
-	text=$((text+66))
-	if [ $textlength -lt $text ] ; then
-	    break
+    text=0
+    redtext=$(eval sed -n \'$((3*$redin)) p\' \"$redplace\")
+    IFS=' '
+    for j in $redtext ; do
+	echo -n "$j " >>$tmp
+	text=$(($text + ${#j}))
+	if [ $text -gt 50 ] ; then
+	    echo '' >>$tmp
+	    text=0
 	fi
     done
+    if [ $text -ne 0 ] ; then
+	echo ''>>$tmp
+    fi
     echo =============================================>>$tmp
     dialog --ascii-lines --textbox $tmp 20 70
     rm $tmp
