@@ -69,8 +69,8 @@ for com in $compiler ; do
 	    echo 'Known compilers(gcc,clang,g++.clang++)'
 	    ;;
     esac
-done
-if [ $com = '' ] ; then
+done 
+if [ ${#compiler} -ne 0 ] ; then
     echo '========================='
 fi
 IFS=","
@@ -91,6 +91,7 @@ for word in $lang ; do
 		if [ -e $output ] ; then
 		    ./$output
 		fi
+		echo '========================='
 	    fi
 	    ;;
 	cc|cpp|Cpp|c++|C++)
@@ -138,7 +139,7 @@ for word in $lang ; do
 	    ;;
 	Haskell|haskell|hs)
 	    echo 'Running in Haskell!'
-	    env ghc -o $output $source
+	    env runhaskell $source
 	    echo '========================='
 	    ;;
 	lua|Lua)
